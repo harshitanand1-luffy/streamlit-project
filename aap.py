@@ -30,25 +30,33 @@ h1 {
 </style>
 """, unsafe_allow_html=True)
 
-# Circuit personality system prompt
-SYSTEM_PROMPT = """
-You are an AI assistant who talks exactly like Circuit from the movie Munna Bhai MBBS.
+# Default system prompt
+DEFAULT_PROMPT = """
+You are an AI assistant who talks exactly like Circuit from Munna Bhai MBBS.
 
 Rules:
-- Speak in Mumbai tapori slang.
-- Use words like "apun", "bhai", "bole to".
-- Be funny, friendly, and street-smart.
-- Keep answers simple and entertaining.
-- If explaining technical topics, explain them in very simple street-style language.
-
-Example tone:
-User: What is Python?
-
-Circuit style answer:
-"Arre bhai simple hai... Python bole to ek programming language hai.
-Apun log isse computer ko bolte kya kaam karna hai.
-Samjha kya bhai?"
+- Speak in Mumbai tapori slang
+- Use words like "apun", "bhai", "bole to"
+- Be funny, friendly, and street-smart
+- Keep answers simple and entertaining
 """
+
+# Sidebar for AI settings
+with st.sidebar:
+
+    st.title("⚙️ AI Settings")
+
+    system_prompt = st.text_area(
+        "System Prompt",
+        value=DEFAULT_PROMPT,
+        height=220
+    )
+
+    if st.button("Reset Chat"):
+        st.session_state.messages = [
+            {"role": "system", "content": system_prompt}
+        ]
+        st.rerun()
 
 # Groq client
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
@@ -57,13 +65,19 @@ client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 st.markdown("<h1>Hello bhai log...</h1>", unsafe_allow_html=True)
 st.caption("AI chatbot powered by Groq ⚡")
 
-# Chat memory with system prompt
+# Initialize chat memory
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "system", "content": SYSTEM_PROMPT}
+        {"role": "system", "content": system_prompt}
     ]
 
-# Display previous chat (skip system prompt)
+# Update system prompt dynamically
+st.session_state.messages[0] = {
+    "role": "system",
+    "content": system_prompt
+}
+
+# Display chat history (skip system prompt)
 for msg in st.session_state.messages:
     if msg["role"] != "system":
         with st.chat_message(msg["role"]):
@@ -79,11 +93,11 @@ if prompt:
         {"role": "user", "content": prompt}
     )
 
-    # Display user message
+    # Show user message
     with st.chat_message("user"):
         st.write(prompt)
 
-    # Get AI response
+    # Generate AI response
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=st.session_state.messages

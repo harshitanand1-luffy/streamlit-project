@@ -7,7 +7,7 @@ load_dotenv()
 
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
-st.title("Harshit's AI Chatbot 🤖")
+st.title("Hello bhai log")
 
 if "messages" not in st.session_state:
     st.session_state.messages = []

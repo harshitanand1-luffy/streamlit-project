@@ -7,7 +7,7 @@ load_dotenv()
 
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
-st.title("Hello bhai log")
+st.title("Hello bhai log...")
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -17,7 +17,7 @@ for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
 
-prompt = st.chat_input("Ask something...")
+prompt = st.chat_input("Pucho Jo puchna hai ")
 
 if prompt:
 

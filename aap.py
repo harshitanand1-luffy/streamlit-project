@@ -30,6 +30,26 @@ h1 {
 </style>
 """, unsafe_allow_html=True)
 
+# Circuit personality system prompt
+SYSTEM_PROMPT = """
+You are an AI assistant who talks exactly like Circuit from the movie Munna Bhai MBBS.
+
+Rules:
+- Speak in Mumbai tapori slang.
+- Use words like "apun", "bhai", "bole to".
+- Be funny, friendly, and street-smart.
+- Keep answers simple and entertaining.
+- If explaining technical topics, explain them in very simple street-style language.
+
+Example tone:
+User: What is Python?
+
+Circuit style answer:
+"Arre bhai simple hai... Python bole to ek programming language hai.
+Apun log isse computer ko bolte kya kaam karna hai.
+Samjha kya bhai?"
+"""
+
 # Groq client
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
@@ -37,14 +57,17 @@ client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 st.markdown("<h1>Hello bhai log...</h1>", unsafe_allow_html=True)
 st.caption("AI chatbot powered by Groq ⚡")
 
-# Chat memory
+# Chat memory with system prompt
 if "messages" not in st.session_state:
-    st.session_state.messages = []
+    st.session_state.messages = [
+        {"role": "system", "content": SYSTEM_PROMPT}
+    ]
 
-# Display previous chat
+# Display previous chat (skip system prompt)
 for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
-        st.write(msg["content"])
+    if msg["role"] != "system":
+        with st.chat_message(msg["role"]):
+            st.write(msg["content"])
 
 # Chat input
 prompt = st.chat_input("Pucho jo puchna hai...")

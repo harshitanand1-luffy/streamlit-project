@@ -37,50 +37,6 @@ st.markdown("""
     filter: brightness(0.92) contrast(1.05);
 }
 
-/* Decorative sides */
-.stApp::before,
-.stApp::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    width: 130px;
-    height: 100%;
-    z-index: -1;
-    background-image: radial-gradient(circle at top, rgba(255,239,165,0.9), transparent 45%),
-                      repeating-linear-gradient(0deg, rgba(255,255,255,0.3), rgba(255,255,255,0.3) 2px, transparent 2px, transparent 6px);
-}
-.stApp::before {
-    left: 0;
-    transform: skewY(-8deg);
-}
-.stApp::after {
-    right: 0;
-    transform: skewY(8deg);
-}
-
-/* Balloons + guns icons */
-.stApp .balloon-gun {
-    position: fixed;
-    width: 60px;
-    height: 60px;
-    font-size: 40px;
-    line-height: 60px;
-    text-align: center;
-    opacity: 0.8;
-    pointer-events: none;
-    animation: floatAround 8s ease-in-out infinite;
-}
-.stApp .balloon-gun:nth-child(1) { left: 15px; top: 180px; animation-delay: 0s; }
-.stApp .balloon-gun:nth-child(2) { right: 18px; top: 240px; animation-delay: 1.3s; }
-.stApp .balloon-gun:nth-child(3) { left: 10px; top: 340px; animation-delay: 2.7s; }
-.stApp .balloon-gun:nth-child(4) { right: 20px; top: 420px; animation-delay: 0.6s; }
-.stApp .balloon-gun:nth-child(5) { left: 22px; top: 520px; animation-delay: 1.9s; }
-
-@keyframes floatAround {
-    0%,100% { transform: translateY(0px) scale(1); }
-    50% { transform: translateY(-8px) scale(1.06); }
-}
-
 /* Header */
 h1 {
     text-align: center;
@@ -180,15 +136,6 @@ Use words like apun, bhai, bole to. Keep answers entertaining.""",
             {"role": "system", "content": system_prompt}
         ]
         st.rerun()
-
-# Decorative emoji objects on sides (balloons + guns)
-st.markdown("""
-<div class='balloon-gun'>🎈</div>
-<div class='balloon-gun'>🔫</div>
-<div class='balloon-gun'>🎈</div>
-<div class='balloon-gun'>🔫</div>
-<div class='balloon-gun'>🎈</div>
-""", unsafe_allow_html=True)
 
 # ---------------- GROQ ----------------
 api_key = get_groq_api_key()

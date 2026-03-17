@@ -23,35 +23,81 @@ st.set_page_config(
 st.markdown("""
 <style>
 
+/* Background */
 .stApp {
-    background: linear-gradient(135deg, #ffcc00, #ff6600);
+    background: radial-gradient(circle at top, #ffcc00, #ff6600);
     color: black;
 }
 
+/* Header */
 h1 {
     text-align: center;
-    font-size: 50px;
-    color: black;
+    font-size: 52px;
+    font-weight: bold;
+    color: #111;
 }
 
+/* Quote styling */
+blockquote {
+    text-align: center;
+    font-size: 20px;
+    font-style: italic;
+    color: #2b2b2b;
+}
+
+/* Chat container */
 .block-container {
     max-width: 900px;
     margin: auto;
 }
 
-.chat-message {
-    padding: 10px;
-    border-radius: 10px;
+/* Chat bubbles */
+[data-testid="stChatMessage"] {
+    background: rgba(0, 0, 0, 0.75);
+    color: #ffffff;
+    border-radius: 15px;
+    padding: 14px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
 }
 
-[data-testid="stChatMessage"] {
-    background-color: rgba(255,255,255,0.7);
-    border-radius: 12px;
-    padding: 10px;
+/* User messages */
+[data-testid="stChatMessage"][data-testid*="user"] {
+    background: linear-gradient(135deg, #ffcc00, #ff8800);
+    color: black;
+}
+
+/* Input box */
+textarea, .stChatInput textarea {
+    background-color: rgba(0,0,0,0.8) !important;
+    color: white !important;
+    border-radius: 12px !important;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #ffcc00, #ff6600);
+    color: black;
+}
+
+/* Buttons */
+.stButton>button {
+    background: linear-gradient(135deg, #ff6600, #ff3300);
+    color: white;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+/* Glow effect */
+img {
+    filter: drop-shadow(0px 0px 10px rgba(255, 200, 0, 0.8));
 }
 
 </style>
 """, unsafe_allow_html=True)
+
+# ---------------- IMAGE PATH ----------------
+image_path = os.path.join(os.path.dirname(__file__), "circuit.png")
 
 # ---------------- UTILITIES ----------------
 def safe_streamlit_image(path, **kwargs):
@@ -66,7 +112,7 @@ def safe_streamlit_image(path, **kwargs):
 # ---------------- SIDEBAR ----------------
 with st.sidebar:
 
-    safe_streamlit_image("circuit.png", width=120)
+    safe_streamlit_image(image_path, width=120)
     st.markdown("## ⚙️ Circuit Settings")
 
     system_prompt = st.text_area(
@@ -99,11 +145,21 @@ except Exception as e:
 col1, col2 = st.columns([1, 3])
 
 with col1:
-    safe_streamlit_image("circuit.png", width=120)
+    safe_streamlit_image(image_path, width=120)
 
 with col2:
     st.markdown("<h1>😎 Hello Bhai Log...</h1>", unsafe_allow_html=True)
-    st.markdown("### *'Bhai tension nahi lene ka… apun hai na 😎'*")
+
+# Movie-style quote
+st.markdown("""
+<blockquote>
+"Bhai tension nahi lene ka… apun hai na 😎<br>
+Jadoo ki jhappi AI version 💛"
+</blockquote>
+""", unsafe_allow_html=True)
+
+# Divider
+st.markdown("---")
 
 # ---------------- CHAT MEMORY ----------------
 if "messages" not in st.session_state or not isinstance(st.session_state.messages, list):
@@ -124,7 +180,7 @@ else:
 # ---------------- DISPLAY CHAT ----------------
 for msg in st.session_state.messages:
     if msg["role"] != "system":
-        avatar = "circuit.png" if msg["role"] == "assistant" else None
+        avatar = image_path if msg["role"] == "assistant" else None
         with st.chat_message(msg["role"], avatar=avatar):
             st.write(msg["content"])
 

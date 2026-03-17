@@ -13,90 +13,34 @@ def get_groq_api_key():
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(
     page_title="Circuit Bhai AI",
-    page_icon="🤖",
+    page_icon=";)",
     layout="wide"
 )
-
 
 # ---------------- CUSTOM CSS ----------------
 st.markdown("""
 <style>
-
-/* 🔥 DARK CINEMATIC BACKGROUND */
 .stApp {
     background: radial-gradient(circle at top, #1a1a1a, #000000 80%);
     color: white;
-    overflow: hidden;
 }
 
-/* 🔥 HEADER */
 h1 {
     text-align: center;
     font-size: 54px;
-    font-weight: bold;
     color: #ffcc00;
-    text-shadow: 0px 0px 20px rgba(255, 200, 0, 0.8);
 }
 
-/* 🔥 QUOTE */
-blockquote {
-    text-align: center;
-    font-size: 20px;
-    font-style: italic;
-    color: #ffdd88;
-}
-
-/* 🔥 CHAT CONTAINER */
-.block-container {
-    max-width: 900px;
-    margin: auto;
-}
-
-/* 🔥 CHAT BUBBLES */
 [data-testid="stChatMessage"] {
-    background: rgba(20, 20, 20, 0.75);
-    backdrop-filter: blur(12px);
-    color: #ffffff;
+    background: rgba(20,20,20,0.75);
     border-radius: 18px;
     padding: 14px;
-    margin-bottom: 12px;
-    box-shadow: 0 0 20px rgba(255, 140, 0, 0.3);
-    border: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 10px;
 }
 
-/* 🔥 USER MESSAGE */
 [data-testid="stChatMessage"][data-testid*="user"] {
     background: linear-gradient(135deg, #ff9900, #ff3300);
-    color: white;
 }
-
-/* 🔥 INPUT BOX */
-textarea, .stChatInput textarea {
-    background-color: rgba(0,0,0,0.9) !important;
-    color: #ffcc00 !important;
-    border-radius: 14px !important;
-    border: 1px solid #ff9900 !important;
-}
-
-/* 🔥 SIDEBAR */
-section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #111, #000);
-    color: #ffcc00;
-}
-
-/* 🔥 BUTTON */
-.stButton>button {
-    background: linear-gradient(135deg, #ff6600, #ff0000);
-    color: white;
-    border-radius: 12px;
-    font-weight: bold;
-}
-
-/* 🔥 GLOW */
-img {
-    filter: drop-shadow(0px 0px 15px rgba(255, 150, 0, 0.9));
-}
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -108,11 +52,41 @@ with st.sidebar:
     st.image(image_path, width=120)
     st.markdown("## ⚙️ Circuit Settings")
 
-    system_prompt = st.text_area(
-        "🧠 Personality",
-        value="Talk like Circuit in Hinglish, funny and street smart",
-        height=150
+    mode = st.selectbox(
+        "🎭 Choose Mood",
+        ["Normal 😎", "Sad 😢", "Happy 😁", "Broken 💔", "Romantic ❤️"]
     )
+
+    if mode == "Sad 😢":
+        system_prompt = """
+You are Circuit. User is sad.
+Cheer them in tapori Hinglish.
+Say things like: apun hai na bhai.
+"""
+    elif mode == "Happy 😁":
+        system_prompt = """
+You are Circuit.
+Be funny, playful, and energetic.
+Crack jokes in tapori style.
+"""
+    elif mode == "Broken 💔":
+        system_prompt = """
+You are Circuit.
+User had breakup.
+Say: ek gayi toh dusri aayegi bhai 😎
+Be emotional + funny.
+"""
+    elif mode == "Romantic ❤️":
+        system_prompt = """
+You are Circuit.
+Flirt in tapori style.
+Be charming and funny.
+"""
+    else:
+        system_prompt = """
+You are Circuit.
+Talk in tapori Hinglish.
+"""
 
 # ---------------- GROQ ----------------
 api_key = get_groq_api_key()
@@ -131,13 +105,9 @@ with col1:
 with col2:
     st.markdown("<h1>😎 Hello Bhai Log...</h1>", unsafe_allow_html=True)
 
-st.markdown("""
-<blockquote>
-"Bhai tension nahi lene ka… apun hai na 😎"
-</blockquote>
-""", unsafe_allow_html=True)
+st.markdown('"Bhai tension nahi lene ka… apun hai na 😎"')
 
-# ---------------- CHAT ----------------
+# ---------------- CHAT MEMORY ----------------
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {"role": "system", "content": system_prompt}
@@ -152,10 +122,7 @@ st.session_state.messages[0] = {
 for msg in st.session_state.messages:
     if msg["role"] != "system":
 
-        if msg["role"] == "assistant":
-            avatar = image_path   # circuit image
-        else:
-            avatar = "😎"         # user emoji
+        avatar = image_path if msg["role"] == "assistant" else "😎"
 
         with st.chat_message(msg["role"], avatar=avatar):
             st.write(msg["content"])

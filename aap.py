@@ -53,7 +53,7 @@ blockquote {
     margin: auto;
 }
 
-/* 🔥 CHAT BUBBLES (GLASS EFFECT) */
+/* 🔥 CHAT BUBBLES */
 [data-testid="stChatMessage"] {
     background: rgba(20, 20, 20, 0.75);
     backdrop-filter: blur(12px);
@@ -91,39 +91,11 @@ section[data-testid="stSidebar"] {
     color: white;
     border-radius: 12px;
     font-weight: bold;
-    box-shadow: 0 0 10px rgba(255,100,0,0.6);
 }
 
-/* 🔥 GLOW IMAGES */
+/* 🔥 GLOW */
 img {
     filter: drop-shadow(0px 0px 15px rgba(255, 150, 0, 0.9));
-}
-
-/* 🔫 FLOATING FUNKY ELEMENTS */
-body::before {
-    content: "😎 🔫 💊 💣 🔥 😎 🔫 💊";
-    position: fixed;
-    top: 10%;
-    left: 5%;
-    font-size: 40px;
-    opacity: 0.08;
-    animation: float 20s linear infinite;
-}
-
-body::after {
-    content: "💥 😈 🔥 😎 🔫 💊";
-    position: fixed;
-    bottom: 10%;
-    right: 5%;
-    font-size: 40px;
-    opacity: 0.08;
-    animation: float 25s linear infinite reverse;
-}
-
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-40px); }
-    100% { transform: translateY(0px); }
 }
 
 </style>
@@ -161,8 +133,10 @@ with col2:
     st.markdown("<h1>😎 Hello Bhai Log...</h1>", unsafe_allow_html=True)
 
 st.markdown("""
+<blockquote>
 "Bhai tension nahi lene ka… apun hai na 😎"
-""")
+</blockquote>
+""", unsafe_allow_html=True)
 
 # ---------------- CHAT ----------------
 if "messages" not in st.session_state:
@@ -175,20 +149,26 @@ st.session_state.messages[0] = {
     "content": system_prompt
 }
 
-# Show chat
+# ---------------- DISPLAY CHAT ----------------
 for msg in st.session_state.messages:
     if msg["role"] != "system":
-        with st.chat_message(msg["role"]):
+
+        if msg["role"] == "assistant":
+            avatar = image_path   # circuit image
+        else:
+            avatar = "😎"         # user emoji
+
+        with st.chat_message(msg["role"], avatar=avatar):
             st.write(msg["content"])
 
-# Input
+# ---------------- INPUT ----------------
 prompt = st.chat_input("Bole to kya puchna hai bhai...")
 
 if prompt:
 
     st.session_state.messages.append({"role": "user", "content": prompt})
 
-    with st.chat_message("user"):
+    with st.chat_message("user", avatar="😎"):
         st.write(prompt)
 
     if client:
@@ -202,5 +182,12 @@ if prompt:
 
     st.session_state.messages.append({"role": "assistant", "content": reply})
 
-    with st.chat_message("assistant"):
-        st.write(reply)
+    with st.chat_message("assistant", avatar=image_path):
+
+        placeholder = st.empty()
+        text = ""
+
+        for word in reply.split():
+            text += word + " "
+            placeholder.markdown(text)
+            time.sleep(0.03)

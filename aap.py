@@ -19,6 +19,9 @@ st.set_page_config(
     layout="wide"
 )
 
+# quick debug banner (confirm code execution)
+st.write("✅ Circuit Bhai AI starting...")
+
 # ---------------- CUSTOM CSS ----------------
 st.markdown("""
 <style>

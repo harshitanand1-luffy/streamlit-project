@@ -25,8 +25,12 @@ st.markdown("""
 
 /* Background */
 .stApp {
-    background: radial-gradient(circle at top, #ffcc00, #ff6600);
-    color: black;
+    background:
+      linear-gradient(120deg, #ffedb5 0%, #ffc565 25%, #ffb22e 50%, #f59300 75%, #e27800 100%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.15), rgba(255,255,255,0.15) 8px, transparent 8px, transparent 16px);
+    color: #1a1a1a;
+    background-blend-mode: overlay;
+    filter: brightness(0.95) contrast(1.05);
 }
 
 /* Header */

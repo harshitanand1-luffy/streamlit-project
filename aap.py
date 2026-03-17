@@ -189,15 +189,17 @@ st.markdown("""
 
 # ---------------- GROQ ----------------
 api_key = get_groq_api_key()
-if not api_key:
-    st.error("GROQ_API_KEY is missing. Set it in Streamlit secrets (or environment variable) and reload.")
-    st.stop()
+use_demo = False
 
-try:
-    client = Groq(api_key=api_key)
-except Exception as e:
-    st.error(f"Failed to initialize Groq client: {e}")
-    st.stop()
+if not api_key:
+    st.warning("GROQ_API_KEY is missing. App will run in demo mode. Set the env variable or secrets and refresh for live GPT responses.")
+    use_demo = True
+else:
+    try:
+        client = Groq(api_key=api_key)
+    except Exception as e:
+        st.warning(f"Failed to initialize Groq client: {e}. Switching to demo mode.")
+        use_demo = True
 
 # ---------------- HEADER ----------------
 col1, col2 = st.columns([1, 3])
@@ -236,9 +238,12 @@ else:
     }
 
 # ---------------- DISPLAY CHAT ----------------
+user_avatar_url = "https://img.icons8.com/emoji/48/000000/loudly-crying-face.png"
+assistant_avatar = image_path
+
 for msg in st.session_state.messages:
     if msg["role"] != "system":
-        avatar = image_path if msg["role"] == "assistant" else None
+        avatar = assistant_avatar if msg["role"] == "assistant" else user_avatar_url
         with st.chat_message(msg["role"], avatar=avatar):
             st.write(msg["content"])
 
@@ -254,25 +259,29 @@ if prompt:
     with st.chat_message("user"):
         st.write(prompt)
 
-    try:
-        response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=st.session_state.messages
-        )
+    if use_demo:
+        # Demo fallback when API key is missing or client init fails
+        reply = "Bhai, demo mode speak kar raha hoon—full offline. API key missing or connection issue, toh live model nahi chala paaya."
+    else:
+        try:
+            response = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=st.session_state.messages
+            )
 
-        reply = ""  # default fallback
-        if hasattr(response, 'choices') and len(response.choices) > 0:
-            first_choice = response.choices[0]
-            if hasattr(first_choice, 'message') and hasattr(first_choice.message, 'content'):
-                reply = first_choice.message.content
-            elif isinstance(first_choice, dict):
-                reply = first_choice.get('message', {}).get('content', '')
+            reply = ""  # default fallback
+            if hasattr(response, 'choices') and len(response.choices) > 0:
+                first_choice = response.choices[0]
+                if hasattr(first_choice, 'message') and hasattr(first_choice.message, 'content'):
+                    reply = first_choice.message.content
+                elif isinstance(first_choice, dict):
+                    reply = first_choice.get('message', {}).get('content', '')
 
-        if not reply:
-            reply = "Sorry bhai, model returned no answer. Try again."
+            if not reply:
+                reply = "Sorry bhai, model returned no answer. Try again."
 
-    except Exception as e:
-        reply = f"Error getting response from Groq: {e}"
+        except Exception as e:
+            reply = f"Error getting response from Groq: {e}"
 
     st.session_state.messages.append(
         {"role": "assistant", "content": reply}

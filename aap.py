@@ -17,7 +17,6 @@ st.set_page_config(
     layout="wide"
 )
 
-st.write("✅ Circuit Bhai AI starting...")
 
 # ---------------- CUSTOM CSS ----------------
 st.markdown("""
